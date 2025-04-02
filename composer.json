@@ -1,0 +1,62 @@
+{
+  "autoload": {
+    "psr-4": {
+      "PetrKnap\\DataSigner\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PetrKnap\\DataSigner\\": "tests"
+    }
+  },
+  "config": {
+    "allow-plugins": false,
+    "sort-packages": true
+  },
+  "description": "Data Signer",
+  "funding": [
+    {
+      "type": "other",
+      "url": "https://petrknap.github.io/donate.html"
+    }
+  ],
+  "homepage": "https://github.com/petrknap/php-data-signer",
+  "keywords": [
+    "cryptography",
+    "security",
+    "signature",
+    "signing"
+  ],
+  "license": "LGPL-3.0-or-later",
+  "name": "petrknap/data-signer",
+  "require": {
+    "php": ">=8.1"
+  },
+  "require-dev": {
+    "nunomaduro/phpinsights": "^2.11",
+    "phpstan/phpstan": "^1.12",
+    "squizlabs/php_codesniffer": "^3.7",
+    "phpunit/phpunit": "^10.5"
+  },
+  "scripts": {
+    "test": "@test-implementation",
+    "check-implementation": [
+      "phpcs --colors --standard=PSR12 --exclude=Generic.Files.LineLength src tests",
+      "phpstan analyse --level max src --ansi --no-interaction",
+      "phpstan analyse --level 5 tests --ansi --no-interaction",
+      "phpinsights analyse src tests --ansi --no-interaction --format=github-action | sed -e \"s#::error file=$PWD/#::notice file=#g\""
+    ],
+    "check-requirements": [
+      "composer update \"petrknap/*\"",
+      "composer outdated \"petrknap/*\" --major-only --strict --ansi --no-interaction"
+    ],
+    "test-implementation": [
+      "phpunit --colors=always --testdox tests"
+    ],
+    "ci-script": [
+      "@check-implementation",
+      "@check-requirements",
+      "@test-implementation"
+    ]
+  }
+}
