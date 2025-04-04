@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace PetrKnap\DataSigner;
 
+/**
+ * @note Tests internal implementation of {@see DataSigner} via {@see SomeDataSigner}.
+ */
 final class DataSignerTest extends DataSignerTestCase
 {
     protected static function getDataSigner(): DataSigner
@@ -15,6 +18,7 @@ final class DataSignerTest extends DataSignerTestCase
     {
         return [
             'data' => self::DATA,
+            'domain + data' => self::DOMAIN . self::DATA,
         ];
     }
 }

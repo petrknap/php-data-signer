@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 abstract class DataSignerTestCase extends TestCase
 {
     protected const DATA = 'data';
+    protected const DOMAIN = 'domain';
 
     public function testWorksWithRawSignature(): void
     {
@@ -45,6 +46,10 @@ abstract class DataSignerTestCase extends TestCase
             'data' => [
                 $dataSigner,
                 $makeSignature($rawSignatures['data']),
+            ],
+            'domain + data' => [
+                $dataSigner->withDomain(self::DOMAIN),
+                $makeSignature($rawSignatures['domain + data']),
             ],
         ];
     }
@@ -93,6 +98,10 @@ abstract class DataSignerTestCase extends TestCase
                 new Signature(
                     rawSignature: 'modified signature',
                 ),
+            ],
+            'wrong domain' => [
+                $dataSigner->withDomain('wrong domain'),
+                $dataSigner->withDomain(self::DOMAIN)->sign(self::DATA),
             ],
         ];
     }

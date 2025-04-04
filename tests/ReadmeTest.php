@@ -20,7 +20,8 @@ final class ReadmeTest extends TestCase implements MarkdownFileTestInterface
     public static function getExpectedOutputsOfPhpExamples(): iterable
     {
         return [
-            'basic-usage' => 'Data was successfully verified by signature.',
+            'usage' => 'Data was successfully verified by signature.',
+            'domain-specific-signing' => 'You can not use signature generated for `password_reset` in `cookies`.',
         ];
     }
 }

@@ -9,12 +9,17 @@ namespace PetrKnap\DataSigner;
  */
 abstract class DataSigner implements DataSignerInterface
 {
+    public function __construct(
+        private readonly string|null $domain = null,
+    ) {
+    }
+
     public function sign(
         string $data,
     ): Signature {
         return new Signature(
             rawSignature: $this->generateRawSignature(
-                data: $data,
+                data: $this->domain . $data,
             ),
         );
     }
@@ -29,6 +34,13 @@ abstract class DataSigner implements DataSignerInterface
         );
         return $signature->rawSignature === $expectedSignature->rawSignature;
     }
+
+    /**
+     * @param non-empty-string|null $domain
+     *
+     * @return static with given domain
+     */
+    abstract public function withDomain(string|null $domain): static;
 
     /**
      * @param string $data binary representation of a data
