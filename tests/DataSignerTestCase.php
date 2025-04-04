@@ -15,7 +15,7 @@ abstract class DataSignerTestCase extends TestCase
         $dataSigner = static::getDataSigner();
         $rawSignature = static::getRawSignatures()['data'];
 
-        self::assertSame($rawSignature, $dataSigner->sign(self::DATA)->toBinary());
+        self::assertSame(base64_encode($rawSignature), base64_encode($dataSigner->sign(self::DATA)->toBinary()));
         self::assertTrue($dataSigner->verify(self::DATA, $rawSignature));
     }
 
