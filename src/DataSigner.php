@@ -6,6 +6,7 @@ namespace PetrKnap\DataSigner;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use PetrKnap\Optional\OptionalString;
 use Psr\Clock\ClockInterface;
 
 /**
@@ -37,7 +38,28 @@ abstract class DataSigner implements DataSignerInterface
                 data: $this->domain . $data . $expiresAt?->getTimestamp(),
             ),
             expiresAt: $expiresAt,
+            originalData: OptionalString::of($data),
         );
+    }
+
+    /**
+     * @return string binary representation of the verified data
+     *
+     * @throws Exception\DataSignerCouldNotVerifySignatureWithOriginalData
+     */
+    public function verified(
+        Signature|string $signatureWithOriginalData,
+    ): string {
+        $signatureWithOriginalData = is_string($signatureWithOriginalData)
+            ? Signature::fromBinary($signatureWithOriginalData)
+            : $signatureWithOriginalData;
+        return $signatureWithOriginalData->originalData
+            ->filter(fn (string $originalData): bool => $this->verify($originalData, $signatureWithOriginalData))
+            ->orElseThrow(fn (string|null $message) => new Exception\DataSignerCouldNotVerifySignatureWithOriginalData(
+                message: $message ?? '',
+                dataSigner: $this,
+                signatureWithOriginalData: $signatureWithOriginalData,
+            ));
     }
 
     public function verify(
