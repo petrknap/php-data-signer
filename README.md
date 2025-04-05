@@ -2,7 +2,7 @@
 
 This library provides a logic for digital signing and validating of a binary data.
 
-Inputs and outputs are binary data, don't be afraid to use the [`petrknap/binary`](https://github.com/petrknap/php-binary).
+Inputs and outputs are binary data, don't be afraid to [use the `petrknap/binary`](https://github.com/petrknap/php-binary).
 
 
 ## Usage
@@ -68,6 +68,28 @@ $apiClient->put(new Some\DataTransferObject(
     property: 'some value',
 ));
 ```
+
+### Communication trough 3rd party machine
+
+If you need to **sign data forwarded trough 3rd party machine** (f.e. by token or cookie), you can use [the Signature with data](./src/Signature.php):
+```php
+use PetrKnap\Binary\Binary;
+use PetrKnap\DataSigner\Some;
+
+$signer = new Some\DataSigner();
+
+$passwordResetToken = $signer->withDomain('password_reset')->sign(
+    data: 'some_user',
+    expiresAt: (new DateTimeImmutable())->modify('+3 hours'),
+)->encode(withData: true)->zlib()->base64(urlSafe: true)->getData();
+
+$verifiedUserIdentifier = $signer->withDomain('password_reset')->verified(
+    Binary::decode($passwordResetToken)->base64()->zlib()->getData(),
+)->orElseThrow();
+echo "Verified user identifier is `{$verifiedUserIdentifier}`.";
+```
+
+**WARNING:** The data are only signed (readable), [use the `petrknap/crypto-sodium`](https://github.com/petrknap/php-crypto-sodium) if you need to encrypt them.
 
 
 ---

@@ -19,8 +19,8 @@ final class DataSigner extends AbstractDataSigner
         );
     }
 
-    protected function generateRawSignature(string $data): string
+    protected function generateRawSignature(string $rawData): string
     {
-        return $data;
+        return $rawData;
     }
 }
