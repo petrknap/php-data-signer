@@ -16,7 +16,20 @@ final class HmacDataSigner extends DataSigner
         private readonly string $hashAlgorithm,
         #[SensitiveParameter]
         private readonly string $key,
+        string|null $domain = null,
     ) {
+        parent::__construct(
+            domain: $domain,
+        );
+    }
+
+    public function withDomain(string|null $domain): static
+    {
+        return new self(
+            hashAlgorithm: $this->hashAlgorithm,
+            key: $this->key,
+            domain: $domain,
+        );
     }
 
     protected function generateRawSignature(string $data): string
