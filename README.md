@@ -9,7 +9,7 @@ Inputs and outputs are binary data, don't be afraid to use the [`petrknap/binary
 
 The **basic use** of [a `DataSigner`](./src/DataSignerInterface.php) is quite simple:
 ```php
-namespace PetrKnap\DataSigner;
+use PetrKnap\DataSigner\SomeDataSigner;
 
 $signer = new SomeDataSigner();
 $data = 'some data';
@@ -21,15 +21,29 @@ if ($signer->verify($data, $signature)) {
 
 ### Domain-specific signing
 
-If you need to **limit the validity** of the signature **to a specific purpose** (domain), just set it to [the `DataSigner`](./src/DataSigner.php):
+If you need to **limit the validity** of the signature **to a specific purpose** (domain), just set it to [the `DataSigner` object](./src/DataSigner.php):
 ```php
-namespace PetrKnap\DataSigner;
+use PetrKnap\DataSigner\SomeDataSigner;
 
 $signer = new SomeDataSigner();
 $data = 'some data';
 $signature = $signer->withDomain('password_reset')->sign($data);
 if (!$signer->withDomain('cookies')->verify($data, $signature)) {
     echo 'You can not use signature generated for `password_reset` in `cookies`.';
+}
+```
+
+### Time-limited signing
+
+If you need to **limit the validity** of the signature **to specific time** (expiration), just give it to [the `DataSigner::sign()` method](./src/DataSigner.php):
+```php
+use PetrKnap\DataSigner\SomeDataSigner;
+
+$signer = new SomeDataSigner();
+$data = 'some data';
+$signature = $signer->sign($data, expiresAt: new DateTimeImmutable('2025-04-05 09:40:53+02:00'));
+if (!$signer->verify($data, $signature)) {
+    echo 'You can not use signature after its expiration.';
 }
 ```
 

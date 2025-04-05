@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PetrKnap\DataSigner;
 
+use Psr\Clock\ClockInterface;
 use SensitiveParameter;
 
 final class HmacDataSigner extends DataSigner
@@ -17,9 +18,11 @@ final class HmacDataSigner extends DataSigner
         #[SensitiveParameter]
         private readonly string $key,
         string|null $domain = null,
+        ClockInterface|null $clock = null,
     ) {
         parent::__construct(
             domain: $domain,
+            clock: $clock,
         );
     }
 
@@ -29,6 +32,7 @@ final class HmacDataSigner extends DataSigner
             hashAlgorithm: $this->hashAlgorithm,
             key: $this->key,
             domain: $domain,
+            clock: $this->clock,
         );
     }
 
