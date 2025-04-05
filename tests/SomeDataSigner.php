@@ -13,6 +13,7 @@ final class SomeDataSigner extends DataSigner
     {
         return new self(
             domain: $domain,
+            clock: $this->clock,
         );
     }
 

@@ -22,6 +22,7 @@ final class ReadmeTest extends TestCase implements MarkdownFileTestInterface
         return [
             'usage' => 'Data was successfully verified by signature.',
             'domain-specific-signing' => 'You can not use signature generated for `password_reset` in `cookies`.',
+            'time-limited-signing' => 'You can not use signature after its expiration.',
         ];
     }
 }
