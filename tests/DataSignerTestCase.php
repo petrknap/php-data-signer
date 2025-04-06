@@ -29,13 +29,14 @@ abstract class DataSignerTestCase extends TestCase
      */
     public function testSignsData(
         DataSigner $dataSigner,
+        SignableDataInterface|string $data,
         DateTimeInterface|null $expiresAt,
         Signature $expectedSignature,
     ): void {
         self::assertEquals(
             $expectedSignature,
             $dataSigner->sign(
-                data: self::DATA,
+                data: $data,
                 expiresAt: $expiresAt,
             ),
         );
@@ -49,28 +50,37 @@ abstract class DataSignerTestCase extends TestCase
             rawSignature: $rawSignature,
             expiresAt: $expiresAt,
         );
-        return [
+        $cases = [
             'data' => [
                 $dataSigner,
+                self::DATA,
                 null,
                 $makeSignature($rawSignatures['data'], null),
             ],
             'data + expiresAt' => [
                 $dataSigner,
+                self::DATA,
                 self::getClock()->now(),
                 $makeSignature($rawSignatures['data + expiresAt'], self::getClock()->now()),
             ],
             'domain + data' => [
                 $dataSigner->withDomain(self::DOMAIN),
+                self::DATA,
                 null,
                 $makeSignature($rawSignatures['domain + data'], null),
             ],
             'domain + data + expiresAt' => [
                 $dataSigner->withDomain(self::DOMAIN),
+                self::DATA,
                 self::getClock()->now(),
                 $makeSignature($rawSignatures['domain + data + expiresAt'], self::getClock()->now()),
             ],
         ];
+        foreach ($cases as $case => $arguments) {
+            yield $case => $arguments;
+            $arguments[1] = new Some\DataTransferObject($arguments[1]);
+            yield str_replace('data', 'data transfer object', $case) => $arguments;
+        }
     }
 
     /**
@@ -78,10 +88,11 @@ abstract class DataSignerTestCase extends TestCase
      */
     public function testVerifiesDataBySignature(
         DataSigner $dataSigner,
+        SignableDataInterface|string $data,
         Signature $signature,
     ): void {
         self::assertTrue($dataSigner->verify(
-            data: self::DATA,
+            data: $data,
             signature: $signature,
         ));
     }
@@ -89,7 +100,7 @@ abstract class DataSignerTestCase extends TestCase
     public static function dataVerifiesDataBySignature(): iterable
     {
         foreach (self::dataSignsData() as $case => $data) {
-            yield $case => [$data[0], $data[2]];
+            yield $case => [$data[0], $data[1], $data[3]];
         }
     }
 

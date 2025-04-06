@@ -10,18 +10,18 @@ namespace PetrKnap\DataSigner;
 interface DataSignerInterface
 {
     /**
-     * @param string $data binary representation of a data
+     * @param SignableDataInterface|string $data signable data instance or binary representation of a data
      */
     public function sign(
-        string $data,
+        SignableDataInterface|string $data,
     ): Signature;
 
     /**
-     * @param string $data binary representation of a data
-     * @param Signature|string $signature instance or binary representation of a signature
+     * @param SignableDataInterface|string $data signable data instance or binary representation of a data
+     * @param Signature|string $signature signature instance or binary representation of a signature
      */
     public function verify(
-        string $data,
+        SignableDataInterface|string $data,
         Signature|string $signature,
     ): bool;
 }
