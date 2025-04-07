@@ -31,7 +31,7 @@
   "name": "petrknap/data-signer",
   "require": {
     "php": ">=8.1",
-    "petrknap/binary": "^4.0",
+    "petrknap/binary": "^4.0|^5.0",
     "psr/clock": "^1.0"
   },
   "require-dev": {
