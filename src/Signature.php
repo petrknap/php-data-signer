@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use PetrKnap\Binary\BinariableInterface;
 use PetrKnap\Binary\BinariableTrait;
+use PetrKnap\Binary\Encoder;
 use PetrKnap\Binary\Serializer;
 
 final class Signature implements BinariableInterface, Serializer\SelfSerializerInterface
@@ -21,6 +22,14 @@ final class Signature implements BinariableInterface, Serializer\SelfSerializerI
         public readonly string $rawSignature,
         public readonly DateTimeInterface|null $expiresAt,
     ) {
+    }
+
+    /**
+     * @note To restore the encoded instance, you need to decode it first and then call the {@see self::fromBinary()} method.
+     */
+    public function encode(): Encoder
+    {
+        return new Encoder($this->toBinary());
     }
 
     public function toBinary(): string

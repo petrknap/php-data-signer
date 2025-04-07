@@ -50,4 +50,16 @@ final class SignatureTest extends TestCase
             ],
         ];
     }
+
+    public function testEncodesItself(): void
+    {
+        $signature = new Signature(
+            rawSignature: 'rawSignature',
+            expiresAt: new DateTimeImmutable(),
+        );
+        self::assertEquals(
+            expected: $signature->toBinary(),
+            actual: $signature->encode()->getData(),
+        );
+    }
 }
