@@ -10,6 +10,7 @@ use PetrKnap\Binary\BinariableInterface;
 use PetrKnap\Binary\BinariableTrait;
 use PetrKnap\Binary\Encoder;
 use PetrKnap\Binary\Serializer;
+use RuntimeException;
 
 final class Signature implements BinariableInterface, Serializer\SelfSerializerInterface
 {
@@ -50,9 +51,11 @@ final class Signature implements BinariableInterface, Serializer\SelfSerializerI
             $unserialized = @self::getSerializer()->unserialize($data); // @todo move suppression to binary package
             /** @var string $rawSignature */
             $rawSignature = $unserialized[self::KEY_RAW_SIGNATURE]
-                ?? throw new Serializer\Exception\CouldNotUnserializeData(__METHOD__, $data);
+                ?? throw new class () extends RuntimeException implements Serializer\Exception\SerializerException {
+                };
             $rawExpiresAt = $unserialized[self::KEY_EXPIRES_AT]
-                ?? throw new Serializer\Exception\CouldNotUnserializeData(__METHOD__, $data);
+                ?? throw new class () extends RuntimeException implements Serializer\Exception\SerializerException {
+                };
             /** @var DateTimeImmutable|null $expiresAt */
             $expiresAt = DateTimeImmutable::createFromFormat('U', (string) $rawExpiresAt);
         } catch (Serializer\Exception\SerializerException) {
