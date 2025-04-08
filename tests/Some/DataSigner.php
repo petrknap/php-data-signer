@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace PetrKnap\DataSigner;
+namespace PetrKnap\DataSigner\Some;
+
+use PetrKnap\DataSigner\DataSigner as AbstractDataSigner;
 
 /**
- * @itnernal dummy implementation for testing and demonstration purposes
+ * @internal dummy implementation for testing and demonstration purposes
  */
-final class SomeDataSigner extends DataSigner
+final class DataSigner extends AbstractDataSigner
 {
     public function withDomain(string|null $domain): static
     {

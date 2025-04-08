@@ -7,13 +7,13 @@ namespace PetrKnap\DataSigner;
 use Psr\Clock\ClockInterface;
 
 /**
- * @note Tests internal implementation of {@see DataSigner} via {@see SomeDataSigner}.
+ * @note Tests internal implementation of {@see DataSigner} via {@see Some\DataSigner}.
  */
 final class DataSignerTest extends DataSignerTestCase
 {
     protected static function getDataSigner(ClockInterface $clock): DataSigner
     {
-        return new SomeDataSigner(
+        return new Some\DataSigner(
             clock: $clock,
         );
     }

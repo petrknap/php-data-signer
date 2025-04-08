@@ -28,9 +28,10 @@ abstract class DataSigner implements DataSignerInterface
     }
 
     public function sign(
-        string $data,
+        SignableDataInterface|string $data,
         DateTimeInterface|null $expiresAt = null,
     ): Signature {
+        $data = is_string($data) ? $data : $data->toSignableData();
         return new Signature(
             rawSignature: $this->generateRawSignature(
                 data: $this->domain . $data . $expiresAt?->getTimestamp(),
@@ -40,7 +41,7 @@ abstract class DataSigner implements DataSignerInterface
     }
 
     public function verify(
-        string $data,
+        SignableDataInterface|string $data,
         Signature|string $signature,
     ): bool {
         $signature = is_string($signature) ? Signature::fromBinary($signature) : $signature;
