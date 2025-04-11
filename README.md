@@ -69,6 +69,29 @@ $apiClient->put(new Some\DataTransferObject(
 ));
 ```
 
+### Communication trough 3rd party machine
+
+If you need to **sign data forwarded trough 3rd party machine** (f.e. by token or cookie), you can use [the Signature with original data](./src/Signature.php):
+```php
+use PetrKnap\Binary\Binary;
+use PetrKnap\DataSigner\Some;
+
+$signer = new Some\DataSigner();
+
+$passwordResetToken = $signer->withDomain('password_reset')->sign(
+    data: 'some_user',
+    expiresAt: (new DateTimeImmutable())->modify('+3 hours'),
+)->encode(withOriginalData: true)->zlib()->base64(urlSafe: true)->getData();
+
+$verifiedUserIdentifier = $signer->withDomain('password_reset')->verified(
+    Binary::decode($passwordResetToken)->base64()->zlib()->getData(),
+);
+echo "Verified user identifier is `{$verifiedUserIdentifier}`.";
+```
+
+**WARNING:** The original data are only signed, but readable.
+If you need to encrypt the data, [use `petrknap/crypto-sodium`](https://github.com/petrknap/php-crypto-sodium).
+
 
 ---
 
