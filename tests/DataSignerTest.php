@@ -22,9 +22,9 @@ final class DataSignerTest extends DataSignerTestCase
     {
         return [
             'data' => self::DATA,
-            'data + expiresAt' => self::DATA . self::getClock()->now()->getTimestamp(),
-            'domain + data' => self::DOMAIN . self::DATA,
-            'domain + data + expiresAt' => self::DOMAIN . self::DATA . self::getClock()->now()->getTimestamp(),
+            'data + domain' => self::DATA . DataSigner::FILE_SEPARATOR . self::DOMAIN . DataSigner::UNIT_SEPARATOR,
+            'data + domain + expiresAt' => self::DATA . DataSigner::FILE_SEPARATOR . self::DOMAIN . DataSigner::UNIT_SEPARATOR . self::getClock()->now()->getTimestamp(),
+            'data + expiresAt' => self::DATA . DataSigner::FILE_SEPARATOR . DataSigner::UNIT_SEPARATOR . self::getClock()->now()->getTimestamp(),
         ];
     }
 }

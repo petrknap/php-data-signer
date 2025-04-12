@@ -21,9 +21,9 @@ final class HmacDataSignerTest extends DataSignerTestCase
     {
         return [
             'data' => base64_decode('GywWt1vSqHDBFBU8zaW8/KYzFLxyL6Fg1pDeEzzLuds='),
-            'data + expiresAt' => base64_decode('gz98uKKzzuxdIPRI305Ouq9YHNKxzonaIPZHFM+MZJY='),
-            'domain + data' => base64_decode('9DBXdOVO+vhWvm6F5ZSE8Np6cSaeVnsEPIxelmKZIic='),
-            'domain + data + expiresAt' => base64_decode('oVGUfzBMm+nY/cdS7GNhHBZUS/5zyWN57NLXrxmaCXY='),
+            'data + domain' => base64_decode('W4l96M0av16MFfBuEoByGUlS7SKtqL4SkPU8mArbtY0='),
+            'data + domain + expiresAt' => base64_decode('FIDtxqWlt86GsGsrCofKJrDZSzFA+ruslW3ELOxR9Cc='),
+            'data + expiresAt' => base64_decode('mS25zoGWghyPp/or4vm+16t1Ee1IfvLmViDX3+tbk70='),
         ];
     }
 }

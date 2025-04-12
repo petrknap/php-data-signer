@@ -55,28 +55,25 @@ abstract class DataSignerTestCase extends TestCase
                 $dataSigner,
                 self::DATA,
                 null,
-                $makeSignature($rawSignatures['data'], null),
+            ],
+            'data + domain' => [
+                $dataSigner->withDomain(self::DOMAIN),
+                self::DATA,
+                null,
+            ],
+            'data + domain + expiresAt' => [
+                $dataSigner->withDomain(self::DOMAIN),
+                self::DATA,
+                self::getClock()->now(),
             ],
             'data + expiresAt' => [
                 $dataSigner,
                 self::DATA,
                 self::getClock()->now(),
-                $makeSignature($rawSignatures['data + expiresAt'], self::getClock()->now()),
-            ],
-            'domain + data' => [
-                $dataSigner->withDomain(self::DOMAIN),
-                self::DATA,
-                null,
-                $makeSignature($rawSignatures['domain + data'], null),
-            ],
-            'domain + data + expiresAt' => [
-                $dataSigner->withDomain(self::DOMAIN),
-                self::DATA,
-                self::getClock()->now(),
-                $makeSignature($rawSignatures['domain + data + expiresAt'], self::getClock()->now()),
             ],
         ];
         foreach ($cases as $case => $arguments) {
+            $arguments[3] = $makeSignature($rawSignatures[$case], $arguments[2]);
             yield $case => $arguments;
             $arguments[1] = new Some\DataTransferObject($arguments[1]);
             yield str_replace('data', 'data transfer object', $case) => $arguments;
