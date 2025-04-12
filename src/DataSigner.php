@@ -10,9 +10,23 @@ use Psr\Clock\ClockInterface;
 
 /**
  * @note Use {@see DataSignerInterface} if you need strong cross-platform compatibility.
+ * @note Uses {@see self::FILE_SEPARATOR} to separate data and metadata.
  */
 abstract class DataSigner implements DataSignerInterface
 {
+    /**
+     * @todo remove support for binary 4 and use Ascii::FileSeparator
+     *
+     * @internal public for test purposes only
+     */
+    public const FILE_SEPARATOR = "\x1C";
+    /**
+     * @todo remove support for binary 4 and use Ascii::UnitSeparator
+     *
+     * @internal public for test purposes only
+     */
+    public const UNIT_SEPARATOR = "\x1F";
+
     protected readonly ClockInterface $clock;
 
     public function __construct(
@@ -34,7 +48,11 @@ abstract class DataSigner implements DataSignerInterface
         $data = is_string($data) ? $data : $data->toSignableData();
         return new Signature(
             rawSignature: $this->generateRawSignature(
-                data: $this->domain . $data . $expiresAt?->getTimestamp(),
+                data: self::packDataWithMetadata(
+                    $data,
+                    $this->domain,
+                    $expiresAt?->format(Signature::DATETIME_FORMAT_UNIX_TIMESTAMP),
+                ),
             ),
             expiresAt: $expiresAt,
         );
@@ -68,4 +86,14 @@ abstract class DataSigner implements DataSignerInterface
      * @return string binary representation of a signature
      */
     abstract protected function generateRawSignature(string $data): string;
+
+    private static function packDataWithMetadata(string $data, string|null ...$metadata): string
+    {
+        foreach ($metadata as $unit) {
+            if ($unit !== null) {
+                return $data . self::FILE_SEPARATOR . implode(self::UNIT_SEPARATOR, $metadata); // @todo remove support for binary 4 and use Ascii::join()
+            }
+        }
+        return $data;
+    }
 }
