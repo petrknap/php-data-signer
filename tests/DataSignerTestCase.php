@@ -6,6 +6,7 @@ namespace PetrKnap\DataSigner;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use PetrKnap\Optional\OptionalString;
 use PHPUnit\Framework\TestCase;
 use Psr\Clock\ClockInterface;
 
@@ -49,6 +50,7 @@ abstract class DataSignerTestCase extends TestCase
         $makeSignature = static fn (string $rawSignature, DateTimeInterface|null $expiresAt): Signature => new Signature(
             rawSignature: $rawSignature,
             expiresAt: $expiresAt,
+            signedData: OptionalString::of(self::DATA),
         );
         $cases = [
             'data' => [
@@ -127,6 +129,7 @@ abstract class DataSignerTestCase extends TestCase
                 new Signature(
                     rawSignature: 'modified signature',
                     expiresAt: null,
+                    signedData: OptionalString::empty(),
                 ),
             ],
             'wrong domain' => [

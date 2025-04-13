@@ -6,6 +6,7 @@ namespace PetrKnap\DataSigner;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use PetrKnap\Optional\OptionalString;
 use Psr\Clock\ClockInterface;
 
 /**
@@ -47,14 +48,29 @@ abstract class DataSigner implements DataSignerInterface
     ): Signature {
         $data = is_string($data) ? $data : $data->toSignableData();
         return new Signature(
-            rawSignature: $this->generateRawSignature(
-                data: self::packDataWithMetadata(
-                    $data,
-                    $this->domain,
-                    $expiresAt?->format(Signature::DATETIME_FORMAT_UNIX_TIMESTAMP),
-                ),
-            ),
+            rawSignature: $this->generateRawSignature(self::packDataWithMetadata(
+                $data,
+                $this->domain,
+                $expiresAt?->format(Signature::DATETIME_FORMAT_UNIX_TIMESTAMP),
+            )),
             expiresAt: $expiresAt,
+            signedData: OptionalString::of($data),
+        );
+    }
+
+    /**
+     * @param Signature|string $signatureWithData signature instance or binary representation of a signature
+     *
+     * @return OptionalString optional binary representation of the verified data
+     */
+    public function verified(
+        Signature|string $signatureWithData,
+    ): OptionalString {
+        $signatureWithData = is_string($signatureWithData)
+            ? Signature::fromBinary($signatureWithData)
+            : $signatureWithData;
+        return $signatureWithData->signedData->filter(
+            fn (string $data): bool => $this->verify($data, $signatureWithData),
         );
     }
 
@@ -81,11 +97,11 @@ abstract class DataSigner implements DataSignerInterface
     abstract public function withDomain(string|null $domain): static;
 
     /**
-     * @param string $data binary representation of a data
+     * @param string $rawData binary representation of a data
      *
      * @return string binary representation of a signature
      */
-    abstract protected function generateRawSignature(string $data): string;
+    abstract protected function generateRawSignature(string $rawData): string;
 
     private static function packDataWithMetadata(string $data, string|null ...$metadata): string
     {

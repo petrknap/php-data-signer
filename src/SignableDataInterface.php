@@ -9,7 +9,7 @@ use PetrKnap\Binary\Ascii;
 interface SignableDataInterface
 {
     /**
-     * @note To avoid collisions, you can use {@see Ascii} separators.
+     * @note To avoid collisions, you can use {@see Ascii::INFORMATION_SEPARATORS}.
      *
      * @return string signable by {@see DataSignerInterface}
      */

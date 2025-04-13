@@ -36,11 +36,11 @@ final class HmacDataSigner extends DataSigner
         );
     }
 
-    protected function generateRawSignature(string $data): string
+    protected function generateRawSignature(string $rawData): string
     {
         return hash_hmac(
             algo: $this->hashAlgorithm,
-            data: $data,
+            data: $rawData,
             key: $this->key,
             binary: true,
         );
