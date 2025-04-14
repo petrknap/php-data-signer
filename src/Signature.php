@@ -30,7 +30,7 @@ final class Signature implements BinariableInterface, Serializer\SelfSerializerI
     private const KEY_SIGNED_DATA = 2;
 
     /**
-     * @param string $rawSignature binary representation of the signature
+     * @param non-empty-string $rawSignature binary representation of the signature
      * @param OptionalString $signedData optional not verified binary representation of the signed data
      */
     public function __construct(
@@ -64,12 +64,15 @@ final class Signature implements BinariableInterface, Serializer\SelfSerializerI
         ], static fn (mixed $value): bool => $value !== null));
     }
 
+    /**
+     * @param non-empty-string $data
+     */
     public static function fromBinary(string $data): self
     {
         try {
             /** @var array<int, string|int> $unserialized */
             $unserialized = @self::getSerializer()->unserialize($data); // @todo remove support for binary 4 and remove error suppression
-            /** @var string $rawSignature */
+            /** @var non-empty-string $rawSignature */
             $rawSignature = $unserialized[self::KEY_RAW_SIGNATURE]
                 ?? throw new class () extends RuntimeException implements Serializer\Exception\SerializerException {
                 }; // @todo remove support for binary 4 and throw correct exception

@@ -22,6 +22,9 @@
   ],
   "homepage": "https://github.com/petrknap/php-data-signer",
   "keywords": [
+    "Ed25519",
+    "EdDSA",
+    "HMAC",
     "cryptography",
     "security",
     "signature",
@@ -33,11 +36,12 @@
     "php": ">=8.1",
     "petrknap/binary": "^4.0|^5.0",
     "petrknap/optional": "^3.0",
+    "petrknap/shorts": "^3.0",
     "psr/clock": "^1.0"
   },
   "require-dev": {
+    "ext-sodium": "*",
     "nunomaduro/phpinsights": "^2.11",
-    "petrknap/shorts": "^3.0",
     "phpstan/phpstan": "^1.12",
     "squizlabs/php_codesniffer": "^3.7",
     "phpunit/phpunit": "^10.5"
@@ -62,5 +66,8 @@
       "@check-requirements",
       "@test-implementation"
     ]
+  },
+  "suggest": {
+    "ext-sodium": "required by Ed25519DataSigner"
   }
 }

@@ -5,6 +5,12 @@ This library provides a logic for digital signing and validating of a binary dat
 Inputs and outputs are binary data, don't be afraid to [use the `petrknap/binary`](https://github.com/petrknap/php-binary).
 
 
+## Implementations
+
+- [Edwards-curve Digital Signature Algorithm (Ed25519)](./src/Ed25519DataSigner.php)
+- [Hash-based Message Authentication Code (HMAC)](./src/HmacDataSigner.php)
+
+
 ## Usage
 
 The **basic use** of [a Data Signer interface](./src/DataSignerInterface.php) is quite simple:

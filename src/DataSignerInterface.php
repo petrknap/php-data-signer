@@ -11,6 +11,8 @@ interface DataSignerInterface
 {
     /**
      * @param SignableDataInterface|string $data signable data instance or binary representation of a data
+     *
+     * @throws Exception\DataSignerCouldNotSignData
      */
     public function sign(
         SignableDataInterface|string $data,
@@ -18,7 +20,7 @@ interface DataSignerInterface
 
     /**
      * @param SignableDataInterface|string $data signable data instance or binary representation of a data
-     * @param Signature|string $signature signature instance or binary representation of a signature
+     * @param Signature|non-empty-string $signature signature instance or binary representation of a signature
      */
     public function verify(
         SignableDataInterface|string $data,
