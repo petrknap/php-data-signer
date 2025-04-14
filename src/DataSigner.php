@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use PetrKnap\Optional\OptionalString;
 use Psr\Clock\ClockInterface;
+use Throwable;
 
 /**
  * @note Use {@see DataSignerInterface} if you need strong cross-platform compatibility.
@@ -46,31 +47,31 @@ abstract class DataSigner implements DataSignerInterface
         SignableDataInterface|string $data,
         DateTimeInterface|null $expiresAt = null,
     ): Signature {
-        $data = is_string($data) ? $data : $data->toSignableData();
-        return new Signature(
-            rawSignature: $this->generateRawSignature(self::packDataWithMetadata(
-                $data,
-                $this->domain,
-                $expiresAt?->format(Signature::DATETIME_FORMAT_UNIX_TIMESTAMP),
-            )),
-            expiresAt: $expiresAt,
-            signedData: OptionalString::of($data),
-        );
+        try {
+            $dataString = is_string($data) ? $data : $data->toSignableData();
+            return new Signature(
+                rawSignature: $this->generateRawSignature($this->generateRawData($dataString, $expiresAt)),
+                expiresAt: $expiresAt,
+                signedData: OptionalString::of($dataString),
+            );
+        } catch (Throwable $reason) {
+            throw new Exception\DataSignerCouldNotSignData(__METHOD__, $data, $reason);
+        }
     }
 
     /**
-     * @param Signature|string $signatureWithData signature instance or binary representation of a signature
+     * @param Signature|non-empty-string $signatureWithData signature instance or binary representation of a signature
      *
      * @return OptionalString optional binary representation of the verified data
      */
     public function verified(
         Signature|string $signatureWithData,
     ): OptionalString {
-        $signatureWithData = is_string($signatureWithData)
+        $signatureWithDataInstance = is_string($signatureWithData)
             ? Signature::fromBinary($signatureWithData)
             : $signatureWithData;
-        return $signatureWithData->signedData->filter(
-            fn (string $data): bool => $this->verify($data, $signatureWithData),
+        return $signatureWithDataInstance->signedData->filter(
+            fn (string $data): bool => $this->verify($data, $signatureWithDataInstance),
         );
     }
 
@@ -78,15 +79,19 @@ abstract class DataSigner implements DataSignerInterface
         SignableDataInterface|string $data,
         Signature|string $signature,
     ): bool {
-        $signature = is_string($signature) ? Signature::fromBinary($signature) : $signature;
-        if ($signature->expiresAt !== null && $signature->expiresAt < $this->clock->now()) {
+        try {
+            $dataString = is_string($data) ? $data : $data->toSignableData();
+            $signatureInstance = is_string($signature) ? Signature::fromBinary($signature) : $signature;
+            if ($signatureInstance->expiresAt !== null && $signatureInstance->expiresAt < $this->clock->now()) {
+                return false;
+            }
+            return $this->verifyRawDataByRawSignature(
+                $this->generateRawData($dataString, $signatureInstance->expiresAt),
+                $signatureInstance->rawSignature,
+            );
+        } catch (Throwable) {
             return false;
         }
-        $expectedSignature = $this->sign(
-            data: $data,
-            expiresAt: $signature->expiresAt,
-        );
-        return $signature->rawSignature === $expectedSignature->rawSignature;
     }
 
     /**
@@ -99,9 +104,28 @@ abstract class DataSigner implements DataSignerInterface
     /**
      * @param string $rawData binary representation of a data
      *
-     * @return string binary representation of a signature
+     * @return non-empty-string binary representation of a signature
+     *
+     * @throws Throwable
      */
     abstract protected function generateRawSignature(string $rawData): string;
+
+    /**
+     * @param string $rawData binary representation of a data
+     * @param non-empty-string $rawSignature binary representation of a signature
+     *
+     * @throws Throwable
+     */
+    abstract protected function verifyRawDataByRawSignature(string $rawData, string $rawSignature): bool;
+
+    private function generateRawData(string $data, DateTimeInterface|null $expiresAt): string
+    {
+        return self::packDataWithMetadata(
+            $data,
+            $this->domain,
+            $expiresAt?->format(Signature::DATETIME_FORMAT_UNIX_TIMESTAMP),
+        );
+    }
 
     private static function packDataWithMetadata(string $data, string|null ...$metadata): string
     {

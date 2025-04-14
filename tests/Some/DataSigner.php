@@ -23,4 +23,9 @@ final class DataSigner extends AbstractDataSigner
     {
         return $rawData;
     }
+
+    protected function verifyRawDataByRawSignature(string $rawData, string $rawSignature): bool
+    {
+        return $rawData === $rawSignature;
+    }
 }

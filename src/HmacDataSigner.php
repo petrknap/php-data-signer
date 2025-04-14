@@ -7,6 +7,9 @@ namespace PetrKnap\DataSigner;
 use Psr\Clock\ClockInterface;
 use SensitiveParameter;
 
+/**
+ * @see hash_hmac()
+ */
 final class HmacDataSigner extends DataSigner
 {
     /**
@@ -44,5 +47,10 @@ final class HmacDataSigner extends DataSigner
             key: $this->key,
             binary: true,
         );
+    }
+
+    protected function verifyRawDataByRawSignature(string $rawData, string $rawSignature): bool
+    {
+        return $this->generateRawSignature($rawData) === $rawSignature;
     }
 }
