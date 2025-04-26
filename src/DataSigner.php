@@ -59,11 +59,6 @@ abstract class DataSigner implements DataSignerInterface
         }
     }
 
-    /**
-     * @param Signature|non-empty-string $signatureWithData signature instance or binary representation of a signature
-     *
-     * @return OptionalString optional binary representation of the verified data
-     */
     public function verified(
         Signature|string $signatureWithData,
     ): OptionalString {
