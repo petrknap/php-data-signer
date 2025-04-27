@@ -58,8 +58,7 @@ final class Signature implements BinariableInterface, Serializer\SelfSerializerI
             self::KEY_RAW_SIGNATURE => $this->rawSignature,
             self::KEY_EXPIRES_AT => $this->expiresAt === null ? null : (int) $this->expiresAt->format(self::DATETIME_FORMAT_UNIX_TIMESTAMP),
             self::KEY_SIGNED_DATA => $withData ? $this->signedData->orElseThrow(
-                static fn () => new class () extends RuntimeException implements Serializer\Exception\SerializerException {
-                }, // @todo remove support for binary 4 and create correct exception
+                fn (): Serializer\Exception\CouldNotSerializeData => new Serializer\Exception\CouldNotSerializeData(self::class, $this),
             ) : null,
         ], static fn (mixed $value): bool => $value !== null));
     }
@@ -71,11 +70,10 @@ final class Signature implements BinariableInterface, Serializer\SelfSerializerI
     {
         try {
             /** @var array<int, string|int> $unserialized */
-            $unserialized = @self::getSerializer()->unserialize($data); // @todo remove support for binary 4 and remove error suppression
+            $unserialized = @self::getSerializer()->unserialize($data); // @todo update petrknap/binary and remove error suppression
             /** @var non-empty-string $rawSignature */
             $rawSignature = $unserialized[self::KEY_RAW_SIGNATURE]
-                ?? throw new class () extends RuntimeException implements Serializer\Exception\SerializerException {
-                }; // @todo remove support for binary 4 and throw correct exception
+                ?? throw new Serializer\Exception\CouldNotUnserializeData(__METHOD__, $data);
             $rawExpiresAt = $unserialized[self::KEY_EXPIRES_AT] ?? null;
             /** @var DateTimeImmutable|null $expiresAt */
             $expiresAt = $rawExpiresAt === null ? null : DateTimeImmutable::createFromFormat(self::DATETIME_FORMAT_UNIX_TIMESTAMP, (string) $rawExpiresAt);

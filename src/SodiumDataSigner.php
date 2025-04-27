@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PetrKnap\DataSigner;
 
 use InvalidArgumentException;
+use PetrKnap\Binary\Ascii;
 use PetrKnap\CryptoSodium\Sign;
 use PetrKnap\Optional\OptionalString;
 use PetrKnap\Shorts\HasRequirements;
@@ -30,8 +31,8 @@ final class SodiumDataSigner implements DataSignerInterface
      */
     public function __construct(
         #[SensitiveParameter]
-        private string $secretKey = "\x00", // @todo remove support for binary 4 and use Ascii::Null
-        private string $publicKey = "\x00", // @todo remove support for binary 4 and use Ascii::Null
+        private string $secretKey = Ascii::NULL,
+        private string $publicKey = Ascii::NULL,
     ) {
         self::checkRequirements(
             classes: [
@@ -39,7 +40,7 @@ final class SodiumDataSigner implements DataSignerInterface
             ],
         );
 
-        if ($this->secretKey === "\x00" && $this->publicKey === "\x00") { // @todo remove support for binary 4 and use Ascii::Null
+        if ($this->secretKey === Ascii::NULL && $this->publicKey === Ascii::NULL) {
             throw new InvalidArgumentException('At least one of $secretKey and $publicKey is required');
         }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PetrKnap\DataSigner;
 
+use PetrKnap\Binary\Ascii;
 use Psr\Clock\ClockInterface;
 
 /**
@@ -22,9 +23,27 @@ final class DataSignerTest extends DataSignerTestCase
     {
         return [
             'data' => self::DATA,
-            'data + domain' => self::DATA . DataSigner::FILE_SEPARATOR . self::DOMAIN . DataSigner::UNIT_SEPARATOR,
-            'data + domain + expiresAt' => self::DATA . DataSigner::FILE_SEPARATOR . self::DOMAIN . DataSigner::UNIT_SEPARATOR . self::getClock()->now()->getTimestamp(),
-            'data + expiresAt' => self::DATA . DataSigner::FILE_SEPARATOR . DataSigner::UNIT_SEPARATOR . self::getClock()->now()->getTimestamp(),
+            'data + domain' => Ascii::FileSeparator->join(
+                self::DATA,
+                Ascii::UnitSeparator->join(
+                    self::DOMAIN,
+                    '',
+                ),
+            ),
+            'data + domain + expiresAt' => Ascii::FileSeparator->join(
+                self::DATA,
+                Ascii::UnitSeparator->join(
+                    self::DOMAIN,
+                    (string) self::getClock()->now()->getTimestamp(),
+                ),
+            ),
+            'data + expiresAt' => Ascii::FileSeparator->join(
+                self::DATA,
+                Ascii::UnitSeparator->join(
+                    '',
+                    (string) self::getClock()->now()->getTimestamp(),
+                ),
+            ),
         ];
     }
 }

@@ -23,7 +23,7 @@ final class ReadmeTest extends TestCase implements MarkdownFileTestInterface
             'usage' => 'Data was successfully verified by signature.',
             'domain-specific-signing' => 'You can not use signature generated for `password_reset` in `cookies`.',
             'time-limited-signing' => 'You can not use signature after its expiration.',
-            'signable-data-transfer-object' => '{"property":"some value","signature":"c29tZSB2YWx1ZQ=="}',
+            'signable-data-transfer-object' => '{"payload":{"property":"some value"},"signature":"c29tZSB2YWx1ZQ=="}',
             'communication-trough-3rd-party-machine' => 'Verified user identifier is `some_user`.',
         ];
     }
