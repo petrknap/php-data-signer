@@ -10,10 +10,9 @@ final class Ed25519DataSignerTest extends DataSignerTestCase
 {
     protected static function getDataSigner(ClockInterface $clock): DataSigner
     {
-        $keyPair = sodium_crypto_sign_seed_keypair(base64_decode('o8DJ9Tp7MT0nOjzzpnrjNQswHHJgwVKrtGgzwWlflaM='));
         return new Ed25519DataSigner(
-            secretKey: sodium_crypto_sign_secretkey($keyPair),
-            publicKey: sodium_crypto_sign_publickey($keyPair),
+            secretKey: base64_decode(SodiumDataSignerTest::B64_SECRET_KEY),
+            publicKey: base64_decode(SodiumDataSignerTest::B64_PUBLIC_KEY),
             clock: $clock,
         );
     }

@@ -4,35 +4,46 @@ declare(strict_types=1);
 
 namespace PetrKnap\DataSigner;
 
+use InvalidArgumentException;
+use PetrKnap\CryptoSodium\Sign;
 use PetrKnap\Shorts\HasRequirements;
 use Psr\Clock\ClockInterface;
 use SensitiveParameter;
 
 /**
- * @see sodium_crypto_sign_detached()
+ * @see Sign (detached mode)
+ *
+ * @note Use {@see SodiumDataSigner} if you want to pack signature with data by {@link https://libsodium.org/}.
  */
 final class Ed25519DataSigner extends DataSigner
 {
     use HasRequirements;
 
+    private readonly Sign $sodium;
+
     /**
-     * @param non-empty-string $secretKey as returned by {@see sodium_crypto_sign_secretkey()}
-     * @param non-empty-string $publicKey as returned by {@see sodium_crypto_sign_publickey()}
+     * @param non-empty-string $secretKey as returned by {@see Sign::extractSecretKey()}
+     * @param non-empty-string $publicKey as returned by {@see Sign::extractPublicKey()}
      */
     public function __construct(
         #[SensitiveParameter]
         private string $secretKey = "\x00", // @todo remove support for binary 4 and use Ascii::Null
-        private readonly string $publicKey = "\x00", // @todo remove support for binary 4 and use Ascii::Null
+        private string $publicKey = "\x00", // @todo remove support for binary 4 and use Ascii::Null
         string|null $domain = null,
         ClockInterface|null $clock = null,
     ) {
         self::checkRequirements(
-            functions: [
-                'sodium_memzero',
-                'sodium_crypto_sign_detached',
-                'sodium_crypto_sign_verify_detached',
+            classes: [
+                Sign::class,
             ],
         );
+
+        if ($this->secretKey === "\x00" && $this->publicKey === "\x00") { // @todo remove support for binary 4 and use Ascii::Null
+            throw new InvalidArgumentException('At least one of $secretKey and $publicKey is required');
+        }
+
+        $this->sodium = new Sign();
+
         parent::__construct(
             domain: $domain,
             clock: $clock,
@@ -41,7 +52,8 @@ final class Ed25519DataSigner extends DataSigner
 
     public function __destruct()
     {
-        sodium_memzero($this->secretKey);
+        $this->sodium->eraseData($this->secretKey);
+        $this->sodium->eraseData($this->publicKey);
     }
 
     public function withDomain(string|null $domain): static
@@ -56,11 +68,11 @@ final class Ed25519DataSigner extends DataSigner
 
     protected function generateRawSignature(string $rawData): string
     {
-        return sodium_crypto_sign_detached($rawData, $this->secretKey);
+        return $this->sodium->signDetached($rawData, $this->secretKey);
     }
 
     protected function verifyRawDataByRawSignature(string $rawData, string $rawSignature): bool
     {
-        return sodium_crypto_sign_verify_detached($rawSignature, $rawData, $this->publicKey);
+        return $this->sodium->verifyDetached($rawSignature, $rawData, $this->publicKey);
     }
 }

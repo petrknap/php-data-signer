@@ -13,6 +13,9 @@
     "allow-plugins": false,
     "sort-packages": true
   },
+  "conflict": {
+    "petrknap/crypto-sodium": "<1.6|>=2"
+  },
   "description": "Data Signer",
   "funding": [
     {
@@ -22,10 +25,15 @@
   ],
   "homepage": "https://github.com/petrknap/php-data-signer",
   "keywords": [
+    "Curve25519",
     "Ed25519",
     "EdDSA",
     "HMAC",
+    "Sodium",
+    "asymmetric cryptography",
     "cryptography",
+    "public key cryptography",
+    "secret key cryptography",
     "security",
     "signature",
     "signing"
@@ -35,16 +43,17 @@
   "require": {
     "php": ">=8.1",
     "petrknap/binary": "^4.0|^5.0",
-    "petrknap/optional": "^3.0",
+    "petrknap/optional": "^3.3",
     "petrknap/shorts": "^3.0",
     "psr/clock": "^1.0"
   },
   "require-dev": {
     "ext-sodium": "*",
     "nunomaduro/phpinsights": "^2.11",
+    "petrknap/crypto-sodium": "*",
     "phpstan/phpstan": "^1.12",
-    "squizlabs/php_codesniffer": "^3.7",
-    "phpunit/phpunit": "^10.5"
+    "phpunit/phpunit": "^10.5",
+    "squizlabs/php_codesniffer": "^3.7"
   },
   "scripts": {
     "test": "@test-implementation",
@@ -68,6 +77,6 @@
     ]
   },
   "suggest": {
-    "ext-sodium": "required by Ed25519DataSigner"
+    "petrknap/crypto-sodium": "required by Ed25519DataSigner and SodiumDataSigner"
   }
 }

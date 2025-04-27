@@ -9,6 +9,7 @@ Inputs and outputs are binary data, don't be afraid to [use the `petrknap/binary
 
 - [Edwards-curve Digital Signature Algorithm (Ed25519)](./src/Ed25519DataSigner.php)
 - [Hash-based Message Authentication Code (HMAC)](./src/HmacDataSigner.php)
+- [Sodium (Ed25519)](./src/SodiumDataSigner.php)
 
 
 ## Usage

@@ -13,7 +13,7 @@ use Psr\Clock\ClockInterface;
 abstract class DataSignerTestCase extends TestCase
 {
     public const NOW = '2025-04-05T09:06:09+02:00';
-    protected const DATA = 'data';
+    public const DATA = 'data';
     protected const DOMAIN = 'domain';
 
     public function testWorksWithRawSignature(): void
