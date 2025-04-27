@@ -6,29 +6,17 @@ namespace PetrKnap\DataSigner;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use PetrKnap\Binary\Ascii;
 use PetrKnap\Optional\OptionalString;
 use Psr\Clock\ClockInterface;
 use Throwable;
 
 /**
  * @note Use {@see DataSignerInterface} if you need strong cross-platform compatibility.
- * @note Uses {@see self::FILE_SEPARATOR} to separate data and metadata.
+ * @note Uses {@see Ascii::FileSeparator} to separate data and metadata.
  */
 abstract class DataSigner implements DataSignerInterface
 {
-    /**
-     * @todo remove support for binary 4 and use Ascii::FileSeparator
-     *
-     * @internal public for test purposes only
-     */
-    public const FILE_SEPARATOR = "\x1C";
-    /**
-     * @todo remove support for binary 4 and use Ascii::UnitSeparator
-     *
-     * @internal public for test purposes only
-     */
-    public const UNIT_SEPARATOR = "\x1F";
-
     protected readonly ClockInterface $clock;
 
     public function __construct(
@@ -126,7 +114,13 @@ abstract class DataSigner implements DataSignerInterface
     {
         foreach ($metadata as $unit) {
             if ($unit !== null) {
-                return $data . self::FILE_SEPARATOR . implode(self::UNIT_SEPARATOR, $metadata); // @todo remove support for binary 4 and use Ascii::join()
+                return Ascii::FileSeparator->join(
+                    $data,
+                    Ascii::UnitSeparator->join(...array_map(
+                        static fn (string|null $value): string => (string) $value,
+                        $metadata,
+                    )),
+                );
             }
         }
         return $data;

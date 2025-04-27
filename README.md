@@ -63,12 +63,11 @@ use PetrKnap\DataSigner\Some;
 $apiClient = new class (new Some\DataSigner()) {
     public function __construct(private readonly Some\DataSigner $dataSigner) {}
     public function put(Some\DataTransferObject $payload): void {
-        $signature = $this->dataSigner->sign($payload);
-        $requestBody = [
-            ...$payload->jsonSerialize(),
-            'signature' => $signature->encode()->base64()->getData(),
+        $request = [
+            'payload' => $payload,
+            'signature' => (string) $this->dataSigner->sign($payload)->encode()->base64(),
         ];
-        echo json_encode($requestBody);  # here should be the API call
+        echo json_encode($request);  # here should be the API call
     }
 };
 $apiClient->put(new Some\DataTransferObject(
@@ -85,13 +84,13 @@ use PetrKnap\DataSigner\Some;
 
 $signer = new Some\DataSigner();
 
-$passwordResetToken = $signer->withDomain('password_reset')->sign(
+$passwordResetToken = (string) $signer->withDomain('password_reset')->sign(
     data: 'some_user',
     expiresAt: (new DateTimeImmutable())->modify('+3 hours'),
-)->encode(withData: true)->zlib()->base64(urlSafe: true)->getData();
+)->encode(withData: true)->zlib()->base64(urlSafe: true);
 
 $verifiedUserIdentifier = $signer->withDomain('password_reset')->verified(
-    Binary::decode($passwordResetToken)->base64()->zlib()->getData(),
+    (string) Binary::decode($passwordResetToken)->base64()->zlib(),
 )->orElseThrow();
 echo "Verified user identifier is `{$verifiedUserIdentifier}`.";
 ```
